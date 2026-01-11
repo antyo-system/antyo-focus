@@ -1,11 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function PreFocus() {
   const navigate = useNavigate();
 
   const [task, setTask] = useState("");
-  const [mode, setMode] = useState("timer"); // timer | stopwatch
+  const [mode, setMode] = useState("timer"); 
   const [duration, setDuration] = useState(25);
 
   const handleStart = () => {
@@ -14,7 +14,6 @@ export default function PreFocus() {
       return;
     }
 
-    // Save session to localStorage
     const session = {
       task,
       mode,
@@ -23,8 +22,6 @@ export default function PreFocus() {
     };
 
     localStorage.setItem("antyo_session", JSON.stringify(session));
-
-    // Redirect to focus page
     navigate("/focus");
   };
 
@@ -35,17 +32,15 @@ export default function PreFocus() {
           Prepare Your Focus
         </h1>
 
-        {/* Task Label */}
         <label className="block text-xl text-white mb-2">Task Label</label>
         <input
           type="text"
           placeholder="Write your task..."
           value={task}
           onChange={(e) => setTask(e.target.value)}
-          className="w-full p-4 rounded-xl bg-black/40 border border-green-300/40 text-white mb-6 focus:outline-none"
+          className="w-full p-4 rounded-xl bg-black/40 border border-green-300/40 text-white mb-6"
         />
 
-        {/* Mode selector */}
         <div className="flex items-center gap-6 mb-6">
           <label className="flex items-center gap-2 text-white text-lg">
             <input
@@ -70,7 +65,6 @@ export default function PreFocus() {
           </label>
         </div>
 
-        {/* Duration */}
         {mode === "timer" && (
           <>
             <label className="block text-xl text-white mb-2">
@@ -85,7 +79,6 @@ export default function PreFocus() {
           </>
         )}
 
-        {/* Start button */}
         <button
           onClick={handleStart}
           className="w-full bg-green-400 text-black font-bold py-4 rounded-xl text-xl hover:bg-green-300 transition"

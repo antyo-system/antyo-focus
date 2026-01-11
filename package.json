@@ -15,6 +15,7 @@
     "@mediapipe/face_detection": "^0.4.1646425229",
     "@mediapipe/tasks-vision": "^0.10.2",
     "@prisma/client": "^7.1.0",
+    "@supabase/supabase-js": "^2.90.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
