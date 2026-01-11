@@ -23,7 +23,7 @@ Alasan:
   - Sesi dapat disimpan di localStorage
   - Fokus dulu ke UI & UX (iterasi cepat)
   - Face detection logic di frontend
-
+### 🧠 Backend
 - Untuk full ANTYO System (skala selanjutnya), opsi:
   - Node.js (Express / NestJS) — paling cocok untuk jangka panjang
   - FastAPI (Python) — jika mau integrasi AI/ML
@@ -33,7 +33,7 @@ Rekomendasi: Mulai tanpa backend dulu, tambah Node.js / FastAPI setelah MVP siap
 ### 🗄️ Database
 - Rekomendasi: Supabase (PostgreSQL)
   - Login simple, REST & realtime, cepat deploy, gratis di awal
-- Untuk MVP → belum perlu DB (localStorage dulu)
+
 
 ### 🚀 Deploy
 - Frontend: Vercel (cepat & gratis)
