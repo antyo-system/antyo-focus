@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+import { supabase } from "../lib/supabase";
 
 export default function FocusScreen() {
   const videoRef = useRef(null);
@@ -134,47 +135,35 @@ export default function FocusScreen() {
     return () => clearInterval(disTimer);
   }, [status]);
 
-  // ✅ Step 3: Handle Stop Session — kirim ke Supabase via API
+  // ✅ Step 3: Handle Stop Session — langsung ke Supabase
   const handleStop = async () => {
     const endTime = Date.now();
     const startTime =
       sessionData?.startTime || endTime - (focusTime + distractedTime) * 1000;
 
-    const newSession = {
-      task: sessionData?.task || "Unnamed Task",
+    const sessionPayload = {
+      task: (sessionData?.task || "Unnamed Task").trim(),
       mode: sessionData?.mode || "stopwatch",
-      focusTime,
-      distractedTime,
-      totalTime: focusTime + distractedTime,
-      startedAt: new Date(startTime).toISOString(),
-      endedAt: new Date(endTime).toISOString(),
+      focus_time: focusTime,
+      distracted_time: distractedTime,
+      total_time: focusTime + distractedTime,
+      started_at: new Date(startTime).toISOString(),
+      ended_at: new Date(endTime).toISOString(),
     };
 
     try {
-      const res = await fetch("http://localhost:4000/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newSession),
-      });
+      const { error } = await supabase
+        .from("focus_sessions")
+        .insert(sessionPayload);
 
-      if (!res.ok) {
-        console.error("Failed to save session to server");
+      if (error) {
+        console.error("Supabase insert error:", error);
       }
     } catch (err) {
-      console.error("Error sending session to backend:", err);
+      console.error("Error saving session:", err);
     }
 
-    // Backup ke localStorage juga
-    const localSession = {
-      ...newSession,
-      focus: focusTime,
-      distracted: distractedTime,
-      total: focusTime + distractedTime,
-    };
-    const updatedHistory = [...focusHistory, localSession];
-    localStorage.setItem("focus_history", JSON.stringify(updatedHistory));
     localStorage.removeItem("antyo_session");
-
     window.location.href = "/dashboard";
   };
 
