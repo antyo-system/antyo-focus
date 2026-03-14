@@ -152,12 +152,16 @@ export default function FocusScreen() {
     };
 
     try {
-      const { error } = await supabase
-        .from("focus_sessions")
-        .insert(sessionPayload);
+      if (supabase) {
+        const { error } = await supabase
+          .from("focus_sessions")
+          .insert(sessionPayload);
 
-      if (error) {
-        console.error("Supabase insert error:", error);
+        if (error) {
+          console.error("Supabase insert error:", error);
+        }
+      } else {
+        console.error("Supabase client not initialized");
       }
     } catch (err) {
       console.error("Error saving session:", err);

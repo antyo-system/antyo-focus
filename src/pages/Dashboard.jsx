@@ -7,6 +7,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchSessions = async () => {
+      if (!supabase) {
+        console.error("Supabase client not initialized");
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase
         .from("focus_sessions")
         .select("*")
