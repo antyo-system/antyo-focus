@@ -135,8 +135,13 @@ export default function FocusScreen() {
     return () => clearInterval(disTimer);
   }, [status]);
 
+  const [saving, setSaving] = useState(false);
+
   // ✅ Step 3: Handle Stop Session — langsung ke Supabase
   const handleStop = async () => {
+    if (saving) return;
+    setSaving(true);
+
     const endTime = Date.now();
     const startTime =
       sessionData?.startTime || endTime - (focusTime + distractedTime) * 1000;
@@ -153,18 +158,28 @@ export default function FocusScreen() {
 
     try {
       if (supabase) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("focus_sessions")
-          .insert(sessionPayload);
+          .insert(sessionPayload)
+          .select();
 
         if (error) {
           console.error("Supabase insert error:", error);
+          alert("Failed to save session: " + error.message);
+          setSaving(false);
+          return;
         }
+        console.log("Session saved:", data);
       } else {
-        console.error("Supabase client not initialized");
+        alert("Supabase not connected — check environment variables");
+        setSaving(false);
+        return;
       }
     } catch (err) {
       console.error("Error saving session:", err);
+      alert("Error saving session: " + err.message);
+      setSaving(false);
+      return;
     }
 
     localStorage.removeItem("antyo_session");
@@ -207,9 +222,10 @@ export default function FocusScreen() {
       {/* Stop button */}
       <button
         onClick={handleStop}
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-3 rounded-full shadow-lg"
+        disabled={saving}
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-red-500 hover:bg-red-600 disabled:bg-gray-500 text-white font-bold px-8 py-3 rounded-full shadow-lg"
       >
-        STOP
+        {saving ? "SAVING..." : "STOP"}
       </button>
     </div>
   );

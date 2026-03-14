@@ -49,6 +49,19 @@ CREATE TRIGGER trg_focus_sessions_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================
+-- Row Level Security — allow anon access for frontend client
+-- ============================================================
+ALTER TABLE focus_sessions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anon insert" ON focus_sessions
+  FOR INSERT TO anon
+  WITH CHECK (true);
+
+CREATE POLICY "Allow anon select" ON focus_sessions
+  FOR SELECT TO anon
+  USING (true);
+
+-- ============================================================
 -- Row Level Security (RLS) — siap untuk auth nanti
 -- ============================================================
 ALTER TABLE focus_sessions ENABLE ROW LEVEL SECURITY;
