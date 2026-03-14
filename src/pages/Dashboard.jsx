@@ -162,10 +162,7 @@ export default function Dashboard() {
         )}
 
         {sessions.map((s) => {
-          const score = focusPercent(
-            s.focus_time || 0,
-            s.distracted_time || 0,
-          );
+          const score = focusPercent(s.focus_time || 0, s.distracted_time || 0);
           return (
             <div
               key={s.id}
