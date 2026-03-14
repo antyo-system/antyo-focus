@@ -29,7 +29,7 @@ export default function FocusScreen() {
       try {
         // ✅ Load Mediapipe WASM
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2/wasm",
         );
 
         // ✅ Load model FaceLandmarker dari Google Cloud Storage (link resmi)
@@ -60,14 +60,14 @@ export default function FocusScreen() {
           if (videoRef.current.readyState >= 2) {
             const results = await landmarker.detectForVideo(
               videoRef.current,
-              performance.now()
+              performance.now(),
             );
 
             ctx.clearRect(
               0,
               0,
               canvasRef.current.width,
-              canvasRef.current.height
+              canvasRef.current.height,
             );
 
             if (results.faceLandmarks && results.faceLandmarks.length > 0) {
@@ -134,20 +134,44 @@ export default function FocusScreen() {
     return () => clearInterval(disTimer);
   }, [status]);
 
-  // ✅ Step 3: Handle Stop Session
-  const handleStop = () => {
+  // ✅ Step 3: Handle Stop Session — kirim ke Supabase via API
+  const handleStop = async () => {
     const endTime = Date.now();
+    const startTime =
+      sessionData?.startTime || endTime - (focusTime + distractedTime) * 1000;
+
     const newSession = {
       task: sessionData?.task || "Unnamed Task",
-      focus: focusTime,
-      distracted: distractedTime,
-      startedAt:
-        sessionData?.startTime || endTime - (focusTime + distractedTime) * 1000,
-      endedAt: endTime,
-      total: focusTime + distractedTime,
+      mode: sessionData?.mode || "stopwatch",
+      focusTime,
+      distractedTime,
+      totalTime: focusTime + distractedTime,
+      startedAt: new Date(startTime).toISOString(),
+      endedAt: new Date(endTime).toISOString(),
     };
 
-    const updatedHistory = [...focusHistory, newSession];
+    try {
+      const res = await fetch("http://localhost:4000/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSession),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to save session to server");
+      }
+    } catch (err) {
+      console.error("Error sending session to backend:", err);
+    }
+
+    // Backup ke localStorage juga
+    const localSession = {
+      ...newSession,
+      focus: focusTime,
+      distracted: distractedTime,
+      total: focusTime + distractedTime,
+    };
+    const updatedHistory = [...focusHistory, localSession];
     localStorage.setItem("focus_history", JSON.stringify(updatedHistory));
     localStorage.removeItem("antyo_session");
 

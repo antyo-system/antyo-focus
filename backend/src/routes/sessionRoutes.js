@@ -1,10 +1,17 @@
-// src/routes/sessionRoutes.js
-import express from 'express';
-import { createSession, getTodaySessions } from '../controllers/sessionController.js';
+// src/routes/sessionRoutes.js — Supabase PostgreSQL
+import express from "express";
+import {
+  createSession,
+  getTodaySessions,
+  getAllSessions,
+  getSessionSummary,
+} from "../controllers/sessionController.js";
 
 const router = express.Router();
 
-router.post('/sessions', createSession);
-router.get('/sessions/today', getTodaySessions);
+router.post("/sessions", createSession);
+router.get("/sessions/today", getTodaySessions);
+router.get("/sessions/summary", getSessionSummary);
+router.get("/sessions", getAllSessions);
 
 export default router;

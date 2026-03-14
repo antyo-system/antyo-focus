@@ -1,7 +1,13 @@
-// src/db.js
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+// src/db.js — Supabase Client
+import "dotenv/config";
+import { createClient } from "@supabase/supabase-js";
 
-// export as named + default to be safe for both import styles
-export const prisma = new PrismaClient();
-export default prisma;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env");
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+export default supabase;
